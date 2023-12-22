@@ -3,18 +3,19 @@
 # Binary Search
 
 - 二分搜索的经典写法（**闭区间**  ），需要注意三点：
-   1. 循环退出条件， 注意low <= high。
-   2. mid的取值， mid = low + （high - left） / 2
-   3. low 和 high 的更新。 low = mid + 1， high = mid - 1；
+
+  1. 循环退出条件， 注意low <= high。
+  2. mid的取值， mid = low + （high - left） / 2
+  3. low 和 high 的更新。 low = mid + 1， high = mid - 1；
 - 二分的本质
 
-   二分的本质是「二段性」而非「单调性」，比如[33. 搜索旋转排序数组](https://leetcode.cn/problems/search-in-rotated-sorted-array/)。「二段性」还能继续细分，不仅仅只有满足 01特性（满足/不满足）的「二段性」可以使用二分，满足 1?特性（一定满足/不一定满足）也可以二分，[162. 寻找峰值](https://leetcode.cn/problems/find-peak-element/)。
-
+  二分的本质是「二段性」而非「单调性」，比如[33. 搜索旋转排序数组](https://leetcode.cn/problems/search-in-rotated-sorted-array/)。「二段性」还能继续细分，不仅仅只有满足 01特性（满足/不满足）的「二段性」可以使用二分，满足 1?特性（一定满足/不一定满足）也可以二分，[162. 寻找峰值](https://leetcode.cn/problems/find-peak-element/)。
 - 二分搜索常见问题：
-   1. 查找第一个与target相等的元素(重复元素上界)，时间复杂度O（logn）
-   2. 查找最后一个与target相等的元素（重复元素下界），时间复杂度O（logn）
-   3. 查找第一个大于等于target的元素，时间复杂度O（logn）
-   4. 查找最后一个小于等于target的元素，时间复杂度O（logn）
+
+  1. 查找第一个与target相等的元素(重复元素上界)，时间复杂度O（logn）
+  2. 查找最后一个与target相等的元素（重复元素下界），时间复杂度O（logn）
+  3. 查找第一个大于等于target的元素，时间复杂度O（logn）
+  4. 查找最后一个小于等于target的元素，时间复杂度O（logn）
 
 二分搜索常用于有序数组， 或者在值不重复数组中找到一个峰值（162. 寻找峰值, 1901. 寻找峰值II）
 
@@ -425,9 +426,9 @@ class Solution {
 
 思路：
 
-   由于数组严格升序， 当数组不缺失元素时，arr[i] = i + 1;
+由于数组严格升序， 当数组不缺失元素时，arr[i] = i + 1;
 
-   所以当arr[i] - i - 1 > 0 时缺失元素， 等于k时代表缺失k个元素。
+所以当arr[i] - i - 1 > 0 时缺失元素， 等于k时代表缺失k个元素。
 
 ```java
 class Solution {
@@ -448,3 +449,36 @@ class Solution {
 }
 ```
 
+[300. 最长递增子序列](https://leetcode.cn/problems/longest-increasing-subsequence/)
+
+给你一个整数数组 `nums` ，找到其中最长严格递增子序列的长度。
+
+**子序列**  是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。例如，`[3,6,2,7]` 是数组 `[0,3,1,6,2,2,7]` 的子序列。
+
+思路：
+
+1. 动态规划，dp[i]以当前元素为结尾的最长子序列。
+2. 动态规划 + 二分查找，降低搜索dp数组的时间复杂度
+
+```java
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        int n = nums.length;
+        int[] dp = new int[n];
+        int ans = 0;
+        for(int num : nums){
+            int left = 0, right = ans - 1;
+            while(left <= right){
+                int mid = left + (right - left) / 2;
+                if(dp[mid] < num) left = mid + 1;
+                else{
+                    right = mid - 1;
+                }
+            }
+            dp[left] = num;
+            if(ans == right + 1) ans++;
+        }
+        return ans;
+    }
+}
+```
