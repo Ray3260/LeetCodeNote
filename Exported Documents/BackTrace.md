@@ -1,5 +1,6 @@
 * 回溯算法和DFS类似，本质上是一种暴力穷举算法。回溯算法是在遍历【树枝】，DFS是在遍历【节点】。
-  解决一个回溯问题，实际上就是遍历一棵决策树，树的每个节点存放一个合法答案，将整棵树遍历一遍，将叶子结点的答案收集起来就能得到所有合法答案。
+解决一个回溯问题，实际上就是遍历一棵决策树，树的每个节点存放一个合法答案，将整棵树遍历一遍，将叶子结点的答案收集起来就能得到所有合法答案。
+
 * 站在回溯树的一个节点上，需要思考3个问题：
 
   1. 路径： 也就是已经作出的选择
@@ -159,31 +160,32 @@
           }
       }
   ```
+
   ```java
-      //剪枝，从n开始
-      class Solution {
-          List<List<Integer>> ans = new LinkedList<>();
-          List<Integer> path = new LinkedList<>();
-          public List<List<Integer>> combine(int n, int k) {
-              if(n <= 0 || k <= 0){
-                  return List.of();
-              }
-              backtrace(n, k, n);
-              return ans;
-          }
-          private void backtrace(int n, int k, int start){
-              int d = k - path.size();//记录剩余个数
-              if(d == 0){
-                  ans.add(new LinkedList<>(path));
-                  return;
-              }
-              for(int i = start; i >= d; i--){//剪枝
-                  path.addLast(i);
-                  backtrace(n, k, i - 1);
-                  path.removeLast();
-              }
-          }
-      }
+    //剪枝，从n开始
+    class Solution {
+        List<List<Integer>> ans = new LinkedList<>();
+        List<Integer> path = new LinkedList<>();
+        public List<List<Integer>> combine(int n, int k) {
+            if(n <= 0 || k <= 0){
+                return List.of();
+            }
+            backtrace(n, k, n);
+            return ans;
+        }
+        private void backtrace(int n, int k, int start){
+            int d = k - path.size();//记录剩余个数
+            if(d == 0){
+                ans.add(new LinkedList<>(path));
+                return;
+            }
+            for(int i = start; i >= d; i--){//剪枝
+                path.addLast(i);
+                backtrace(n, k, i - 1);
+                path.removeLast();
+            }
+        }
+    }
   ```
 * [216. 组合总和 III](https://leetcode.cn/problems/combination-sum-iii/)
   找出所有相加之和为 n 的 k 个数的组合，且满足下列条件：
@@ -194,63 +196,98 @@
   组合回溯 + 剪枝（加上剩余数字不够k个， 剩余数字即使都选最大也不够n）
 
   ```java
-      class Solution {
-          List<List<Integer>> ans = new LinkedList<>();
-          List<Integer> path = new LinkedList<>();
-          public List<List<Integer>> combinationSum3(int k, int n) {
-              backtrace(k, n, 9);
-              return ans;
-          }
-          private void backtrace(int k, int n, int start){
-              int d = k - path.size();
-              //剪枝
-              if(n < 0 || n > (start * 2 - d + 1) * d / 2) return;
-              if(d == 0){
-                  ans.add(new LinkedList<>(path));
-                  return;
-              }
-              //回溯模板 枚举下一个数选择哪个
-              for(int i = start; i >= d; i--){
-                  path.addLast(i);
-                  backtrace(k, n - i, i - 1);
-                  path.removeLast();
-              }
-          }
-      }
-  ```  
-* [22. 括号生成](https://leetcode.cn/problems/generate-parentheses/)
-    数字 n 代表生成括号的对数，请你设计一个函数，用于能够生成所有可能的并且 有效的 括号组合。
-    思路：
-    组合回溯， 需要记录左括号的数量，根据左括号数量进行剪枝操作
-    ```java
-        class Solution {
-            //从2n个位置选择n个左括号，剪枝过程，右括号数量不能超过左括号数量start - cnt < cnt
-            //start 为当前括号数量， cnt为左括号数量
-            List<String> ans = new ArrayList<>();
-            StringBuilder path = new StringBuilder(); 
-            public List<String> generateParenthesis(int n) {
-                if(n == 0) return List.of();
-                //括号数量0-2n，左括号数量0-n
-                backtrace(0, 0, n);
-                return ans;
+    class Solution {
+        List<List<Integer>> ans = new LinkedList<>();
+        List<Integer> path = new LinkedList<>();
+        public List<List<Integer>> combinationSum3(int k, int n) {
+            backtrace(k, n, 9);
+            return ans;
+        }
+        private void backtrace(int k, int n, int start){
+            int d = k - path.size();
+            //剪枝
+            if(n < 0 || n > (start * 2 - d + 1) * d / 2) return;
+            if(d == 0){
+                ans.add(new LinkedList<>(path));
+                return;
             }
-            private void backtrace(int start, int cnt, int n){
-                if(start == 2 * n){
-                    ans.add(new String(path));
-                    return;
-                }
-                //枚举选择左括号还是右括号
-                if(cnt < n){//可以选择左括号
-                    path.append('(');
-                    backtrace(start + 1, cnt + 1, n);
-                    path.deleteCharAt(path.length() - 1);
-                }
-                if(start - cnt < cnt){
-                    //可以选择右括号
-                    path.append(')');
-                    backtrace(start + 1, cnt, n);
-                    path.deleteCharAt(path.length() - 1);
-                }
+            //回溯模板 枚举下一个数选择哪个
+            for(int i = start; i >= d; i--){
+                path.addLast(i);
+                backtrace(k, n - i, i - 1);
+                path.removeLast();
             }
         }
-    ```
+    }
+  ```
+* [22. 括号生成](https://leetcode.cn/problems/generate-parentheses/)
+  数字 n 代表生成括号的对数，请你设计一个函数，用于能够生成所有可能的并且 有效的 括号组合。
+  思路：
+  组合回溯， 需要记录左括号的数量，根据左括号数量进行剪枝操作
+
+  ```java
+    class Solution {
+        //从2n个位置选择n个左括号，剪枝过程，右括号数量不能超过左括号数量start - cnt < cnt
+        //start 为当前括号数量， cnt为左括号数量
+        List<String> ans = new ArrayList<>();
+        StringBuilder path = new StringBuilder(); 
+        public List<String> generateParenthesis(int n) {
+            if(n == 0) return List.of();
+            //括号数量0-2n，左括号数量0-n
+            backtrace(0, 0, n);
+            return ans;
+        }
+        private void backtrace(int start, int cnt, int n){
+            if(start == 2 * n){
+                ans.add(new String(path));
+                return;
+            }
+            //枚举选择左括号还是右括号
+            if(cnt < n){//可以选择左括号
+                path.append('(');
+                backtrace(start + 1, cnt + 1, n);
+                path.deleteCharAt(path.length() - 1);
+            }
+            if(start - cnt < cnt){
+                //可以选择右括号
+                path.append(')');
+                backtrace(start + 1, cnt, n);
+                path.deleteCharAt(path.length() - 1);
+            }
+        }
+    }
+  ```
+
+## 排列型回溯
+
+* [46. 全排列](https://leetcode.cn/problems/permutations/)
+    给定一个不含重复数字的数组 nums ，返回其 所有可能的全排列 。你可以 按任意顺序 返回答案.
+    思路：
+        经典回溯算法，需要一个visited数组记录元素是否已经使用过
+```java
+class Solution {
+    List<List<Integer>> ans = new ArrayList<>();
+    List<Integer> path = new LinkedList<>();
+    boolean[] visited;
+    public List<List<Integer>> permute(int[] nums) {
+        visited = new boolean[nums.length];
+        backtrace(nums);
+        return ans;
+    }
+    private void backtrace(int[] nums){
+        if(path.size() == nums.length){
+            ans.add(new LinkedList(path));
+        }
+        for(int i = 0; i < nums.length; i++){
+            if(visited[i]){
+                continue;
+            }
+            path.addLast(nums[i]);
+            visited[i] = true;
+            backtrace(nums);
+            path.removeLast();
+            visited[i] = false;
+        }
+    }
+}
+```
