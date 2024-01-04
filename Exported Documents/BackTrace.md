@@ -1,6 +1,5 @@
 * 回溯算法和DFS类似，本质上是一种暴力穷举算法。回溯算法是在遍历【树枝】，DFS是在遍历【节点】。
-解决一个回溯问题，实际上就是遍历一棵决策树，树的每个节点存放一个合法答案，将整棵树遍历一遍，将叶子结点的答案收集起来就能得到所有合法答案。
-
+  解决一个回溯问题，实际上就是遍历一棵决策树，树的每个节点存放一个合法答案，将整棵树遍历一遍，将叶子结点的答案收集起来就能得到所有合法答案。
 * 站在回溯树的一个节点上，需要思考3个问题：
 
   1. 路径： 也就是已经作出的选择
@@ -261,9 +260,10 @@
 ## 排列型回溯
 
 * [46. 全排列](https://leetcode.cn/problems/permutations/)
-    给定一个不含重复数字的数组 nums ，返回其 所有可能的全排列 。你可以 按任意顺序 返回答案.
-    思路：
-        经典回溯算法，需要一个visited数组记录元素是否已经使用过
+  给定一个不含重复数字的数组 nums ，返回其 所有可能的全排列 。你可以 按任意顺序 返回答案.
+  思路：
+  经典回溯算法，需要一个visited数组记录元素是否已经使用过
+
 ```java
 class Solution {
     List<List<Integer>> ans = new ArrayList<>();
@@ -291,3 +291,118 @@ class Solution {
     }
 }
 ```
+
+[51. N 皇后](https://leetcode.cn/problems/n-queens/)
+    按照国际象棋的规则，皇后可以攻击与之处在同一行或同一列或同一斜线上的棋子。
+    n 皇后问题 研究的是如何将 n 个皇后放置在 n×n 的棋盘上，并且使皇后彼此之间不能相互攻击。
+    给你一个整数 n ，返回所有不同的 n 皇后问题 的解决方案。
+    每一种解法包含一个不同的 n 皇后问题 的棋子放置方案，该方案中 'Q' 和 '.' 分别代表了皇后和空位。
+    思路:
+    1、直接回溯从上到下遍历每行做选择，选择前进行判断该位置是否合法。
+```java
+    class Solution {
+        List<List<String>> ans = new ArrayList<>();
+        public List<List<String>> solveNQueens(int n) {
+            //回溯算法
+            //创建棋盘
+            List<String> board = new ArrayList<>();
+            StringBuilder sb = new StringBuilder();
+            for(int i = 0; i < n; i++){
+                sb.append(".");
+            }
+            for(int i = 0; i < n; i++){
+                board.add(sb.toString());
+            }
+
+            //回溯放置皇后
+            backtrace(board, 0);
+            return ans;
+        }
+
+        public void backtrace(List<String> board, int row){
+            //从上往下遍历每一行，放置棋子。排除不合法位置。
+            if(row == board.size()){
+                ans.add(new ArrayList<>(board));
+                return;
+            }
+            int n = board.get(row).length();
+            for(int col = 0; col < n; col++){
+                //合法才能做选择
+                if(!isvalid(board, row, col)) continue;
+                
+                //放置皇后
+                char[] s = board.get(row).toCharArray();
+                s[col] = 'Q';
+                //更新棋盘
+                board.set(row, String.valueOf(s));
+                backtrace(board, row + 1);
+                
+                //撤销选择,复原棋盘
+                s[col] = '.';
+                board.set(row, String.valueOf(s));
+
+            }
+        }
+
+        public boolean isvalid(List<String> board, int row, int col){
+            int n = board.size();
+            
+            //列冲突
+            for(int i = 0; i <= row; i++){
+                if(board.get(i).charAt(col) == 'Q') return false;
+            }
+            //右上方冲突
+            for(int i = row - 1, j = col + 1; i >= 0 && j < n; i--, j++){
+                if(board.get(i).charAt(j) == 'Q') return false;
+            }
+            //左上方冲突
+            for(int i = row - 1, j = col - 1; i >= 0 && j >= 0; i--, j--){
+                if(board.get(i).charAt(j) == 'Q') return false;
+            }
+            return true;
+        }
+
+    }
+```
+    2、回溯优化，每行每列恰好有一个皇后，鸽巢原理（抽屉）。使用一个数组a记录皇后的位置，第i行的皇后在第a[i]列，则a是一个从0到n-1的一个全排列。这样满足每行每列恰好一个皇后，然后在进行判断左上和右上是否有其他皇后。使用三个bool数组分别存储列、左上、右上是否合法。
+```java
+    class Solution {
+        List<List<String>> ans = new ArrayList<>();
+        boolean[] onpath, diag1, diag2;
+        int[] col;
+        public List<List<String>> solveNQueens(int n) {
+            col = new int[n];
+            onpath = new boolean[n];
+            //利用坐标记录 右上r + c值不变，左上 r - c 值不变
+
+            diag1 = new boolean[n * 2 - 1];
+            diag2 = new boolean[n * 2 - 1];
+            backtrace(0, n);
+            return ans;
+        }
+        public void backtrace(int r, int n){
+            if(r == n){
+                List<String> board = new ArrayList<>();
+                for(int c : col){
+                    char[] row = new char[n];
+                    Arrays.fill(row, '.');
+                    row[c] = 'Q';
+                    board.add(new String(row));
+                }
+                ans.add(board);
+                return;
+            }
+            for(int c = 0; c < n; c++){
+                //避免负数 + n - 1
+                int rc = r - c + n - 1;
+                if(!onpath[c] && !diag1[r + c] && !diag2[rc]){
+                    col[r] = c;
+                    onpath[c] = diag1[r + c] = diag2[rc] = true;
+                    backtrace(r + 1, n);
+                    onpath[c] = diag1[r + c] = diag2[rc] = false;
+                }
+            }
+        }
+    }
+```
+
