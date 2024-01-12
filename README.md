@@ -3,6 +3,14 @@
 
 参考[cookbook](https://github.com/halfrost/LeetCode-Go/releases/), 写出自己的题解记录和分类。
 
+## 个人纪录
+| |简单|中等|困难|总计|
+|:--:|:--:|:--:|:--:|:--:|
+|通过数|170|50|290|510|
+|总数|898|1791|733|3432|
+|通过率|77.6%|84.1%|86.1%|81.1%|
+
+
 ## [LeetCode 75](https://leetcode.cn/studyplan/leetcode-75/) 刷题日记
 |No.|Title|Difficulty|Type|
 |:--:|:--:|:--:|:--:|
@@ -83,4 +91,3 @@
 |901|[股票价格跨度](https://leetcode.cn/problems/online-stock-span)|MEDIUM|单调栈|
 
 ## [算法笔记](https://github.com/Ray3260/LeetCodeNote/tree/main/Exported%20Documents)记录一些经典算法模板以及变体
-
