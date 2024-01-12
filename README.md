@@ -82,4 +82,5 @@
 |739|[每日温度](https://leetcode.cn/problems/daily-temperatures)|MEDIUM|单调栈|
 |901|[股票价格跨度](https://leetcode.cn/problems/online-stock-span)|MEDIUM|单调栈|
 
-## 
+## [算法笔记](https://github.com/Ray3260/LeetCodeNote/tree/main/Exported%20Documents)记录一些经典算法模板以及变体
+
