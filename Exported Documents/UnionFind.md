@@ -172,3 +172,74 @@ class Solution {
     
 }
 ```
+## 情侣牵手
+n 对情侣坐在连续排列的 2n 个座位上，想要牵到对方的手。
+
+人和座位由一个整数数组 row 表示，其中 row[i] 是坐在第 i 个座位上的人的 ID。情侣们按顺序编号，第一对是 (0, 1)，第二对是 (2, 3)，以此类推，最后一对是 (2n-2, 2n-1)。
+
+返回 最少交换座位的次数，以便每对情侣可以并肩坐在一起。 每次交换可选择任意两人，让他们站起来交换座位。
+
+```
+示例 1:
+输入: row = [0,2,1,3]
+输出: 1
+解释: 只需要交换row[1]和row[2]的位置即可。
+
+提示:
+2n == row.length
+2 <= n <= 30
+n 是偶数
+0 <= row[i] < 2n
+row 中所有元素均无重复
+```
+
+思路：使用并查集获得n个联通分量，每个联通分量表示逻辑上连在一起的情侣，逻辑相连：比如三对情侣首尾相连，即使每一对都做错位置，但是这三对之间互相交换则可以做对位置。只有一对情侣时是做对位置的。\
+假设一共有N对情侣，包括逻辑上连在一起的情侣，分别由N1、N2、N3、··· 、Nn对，n为并查集连通分量数量，N1 + N2 + ··· + Nn = N, 把逻辑上相连的情侣拆开，至少需要交换N1 - 1、N2 - 1、··· 、Nn - 1次
+最少交换次数 = N1 - 1 + N2 - 1 + ··· + Nn - 1 = N - n = 情侣对数 - 连通分量数量
+
+```java
+class Solution {
+    public int minSwapsCouples(int[] row) {
+        //交换次数 = 未正确情侣对数 - 1
+        //交换次数 = 交换后的连通分量个数（n对情侣） - 交换前的连通分量个数（cnt）
+        int n = row.length;
+        UnionFind uf = new UnionFind(n);
+        for(int i = 0; i < n; i += 2){
+            uf.union(row[i], row[i + 1]);
+        }
+        return n / 2 - uf.getCount();
+    }
+    private class UnionFind{
+        private int cnt;
+        private int[] parent;
+
+        public UnionFind(int n){
+            //n为偶数
+            parent = new int[n];
+            for(int i = 0; i < n; i++){
+                parent[i] = i / 2 * 2;//两个为一对，左边为父亲节点
+            }
+            cnt = n / 2;
+        }
+        public int find(int i){
+            while(parent[i] != i){
+                parent[i] = parent[parent[i]];
+                i = parent[i];
+            }
+            return i;
+        }
+        public void union(int i, int j){
+            if(isConnected(i, j)) return;
+            cnt--;
+            parent[find(i)] = find(j);
+        }
+        public boolean isConnected(int i, int j){
+            return find(i) == find(j);
+        }
+        public int getCount(){
+            return cnt;
+        }
+    }
+}
+```
+
